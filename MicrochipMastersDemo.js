@@ -8,40 +8,7 @@ var endpointAddress;
 // Delay time tracking
 var eventTime;
 
-const USER_DEVICES_MOCK = [
-  {
-    applianceId: 'unique-id-for-non-dimmable-bulb-specific-to-user1',
-    manufacturerName: 'SmartHome Product Company',
-    modelName: 'NON-DIMMABLE BULB MODEL ABC',
-    version: '1.0',
-    friendlyName: 'Smart light',
-    friendlyDescription: 'Smart light bulb from SmartHome Product Company',
-    isReachable: true,
-    actions: ['turnOn', 'turnOff'],
-    additionalApplianceDetails: {
-      extraDetail1: 'optionalDetailForSkillAdapterToReferenceThisDevice',
-      extraDetail2: 'There can be multiple entries',
-      extraDetail3: 'but they should only be used for reference purposes.',
-      extraDetail4: 'This is not a suitable place to maintain current device state',
-    },
-  }, {
-    applianceId: 'unique-id-for-dimmable-bulb-specific-to-user1',
-    manufacturerName: 'SmartHome Product Company',
-    modelName: 'DIMMABLE BULB MODEL XYZ',
-    version: '1.0',
-    friendlyName: 'Dimmable light',
-    friendlyDescription: 'Dimmable light bulb from SmartHome Product Company',
-    isReachable: true,
-    actions: ['turnOn', 'turnOff', 'setPercentage', 'incrementPercentage', 'decrementPercentage'],
-    additionalApplianceDetails: {
-    },
-  },
-];
-
 var USER_DEVICES=[];
-/**
- * Utility functions
- */
 
 function log(title, msg) {
   console.log(`[${title}] ${msg}`);
