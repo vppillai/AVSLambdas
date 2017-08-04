@@ -91,11 +91,16 @@ function getDevicesFromPartnerCloud(userAccessToken,response,callback) {
         //deep clean before re-fill
         Object.keys(deviceData).forEach(function(key) { delete deviceData[key]; });
 
-        if (!data.things[i].thingName) continue;
-        deviceData.applianceId          =      data.things[i].thingName;
+        if (!data.things[i].attributes.IDName) continue;
+        deviceData.applianceId          =      data.things[i].attributes.IDName;
 
         if (!data.things[i].attributes.FriendlyName) continue;
         deviceData.friendlyName         =      data.things[i].attributes.FriendlyName;
+
+        if (!data.things[i].thingName) continue;
+        deviceData.additionalApplianceDetails={};
+        deviceData.additionalApplianceDetails.thingName=data.things[i].thingName
+
         deviceData.isReachable          =      true;
         deviceData.manufacturerName     =      "Microchip Technologies";
         deviceData.modelName            =      "Microchip smart devices";
@@ -107,7 +112,7 @@ function getDevicesFromPartnerCloud(userAccessToken,response,callback) {
         //console.log(`pushing ${JSON.stringify(deviceData)}`);
         USER_DEVICES.push(JSON.parse(JSON.stringify(deviceData)));
       }
-      console.log( `IoT device data ${JSON.stringify(USER_DEVICES)}`);
+      //console.log( `IoT device data ${JSON.stringify(USER_DEVICES)}`);
       response.payload.discoveredAppliances=USER_DEVICES;
 
       /**
