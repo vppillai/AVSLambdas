@@ -1,18 +1,32 @@
 'use strict'
 var https=require('https');
+//var request = require('request');
 
 exports.handler=function(event,context){
   var request=event.request;
-
-  //request.type:
-  //LaunchRequest
-  //IntentRequest
-  //SessionEndedRequest
+  var userEmail;
+  
   try{
+    if (event.session.user.accessToken){
+     //console.log(event.session.user.accessToken);
+     getUser(event.session.user.accessToken, function(userMail,err){
+          if(err){
+            userEmail="microchip@microchip.com"
+            context.fail(err);
+          }
+          else{
+            userEmail=userMail;
+            console.log("User name is : " + userMail);
+          }
+        });
+    }
+    else{
+        userEmail="microchip@microchip.com"
+    }
+
+  
     let options={}; 
     if(request.type === "LaunchRequest"){
-        //options.speechText = `Hello. `;
-        //options.speechText += getWish();
         getQuote(function(quote,err){
           if(err){
             context.fail(err);
@@ -99,6 +113,32 @@ function getQuote(callback){
   });
 
   req.on('error',function(err){
+    callback('',err);
+  });
+}
+
+function getUser(accessToken,callback){
+  var amznProfileURL = 'https://api.amazon.com/user/profile?access_token=';
+  amznProfileURL += accessToken;
+
+  var req= https.get(amznProfileURL,function(res){
+    var body = "";
+
+    res.on('data',function(chunk){
+      body+=chunk;
+    });
+
+    res.on('end',function(){
+      console.log(body);
+      //body= body.replace(/\\/g,'');
+      var profile = JSON.parse(body);
+      console.log("UserName: " + profile.name);
+      console.log("Email: " + profile.email);
+      callback(profile.name);
+    });
+  });
+
+    req.on('error',function(err){
     callback('',err);
   });
 }
