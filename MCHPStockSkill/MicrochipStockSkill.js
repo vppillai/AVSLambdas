@@ -1,6 +1,5 @@
 'use strict'
 var https=require('https');
-//var request = require('request');
 
 exports.handler=function(event,context){
   var request=event.request;
