@@ -11,14 +11,16 @@ exports.handler=function(event,context){
   try{
     let options={}; 
     if(request.type === "LaunchRequest"){
-        options.speechText = `Hello. `;
+        //options.speechText = `Hello. `;
         //options.speechText += getWish();
         getQuote(function(quote,err){
           if(err){
             context.fail(err);
           }
           else{
+            options.speechText = `Last traded value of Microchip share is `;
             options.speechText += quote;
+            options.speechText += ` U S dollars`;
             options.endSession=true;
             context.succeed(buildResponse(options));
           }
@@ -33,7 +35,7 @@ exports.handler=function(event,context){
           }
           else{
             options.speechText += quote;
-            options.speechText += ` dollars`;
+            options.speechText += ` U S dollars`;
             options.endSession=true;
             context.succeed(buildResponse(options));
           }
