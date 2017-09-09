@@ -1,0 +1,3 @@
+The program that referred you to this privacy statement is meant to be used purely for demonstration purposes only. There is no warranty of any sorts regarding the safety, functionality or privacy offered by this application. 
+
+In case of account linked applications, the data fetched from the account that is linked to this application might be logged in internal monitoring logs and/or published in external channels that might be publicly accessible by anyone. In case you are not OK with this kind of treatment of your data, please refrain from using this application and immediately uninstall it.
