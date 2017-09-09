@@ -5,6 +5,7 @@ var mqtt=require('mqtt');
 exports.handler=function(event,context){
   var request=event.request;
   var userEmail;
+  let options={}; 
 
   try{
     if (event.session.user.accessToken){
@@ -12,7 +13,7 @@ exports.handler=function(event,context){
       getUser(event.session.user.accessToken, function(userMail,err){
         if(err){
           userEmail="microchip@microchip.com"
-            context.fail(err);
+          context.fail(err);
         }
         else{
           userEmail=userMail;
@@ -22,9 +23,12 @@ exports.handler=function(event,context){
     }
     else{
       userEmail="microchip@microchip.com"
+      options.speechText = `Please use the companion app to authenticate on Amazon to start using this skill`;    
+      options.endSession=true;   
+      options.accountLinkCard=true;
+      context.succeed(buildResponse(options));
     }
 
-    let options={}; 
     if(request.type === "LaunchRequest"){
       getQuote(function(quote,err){
         if(err){
@@ -98,6 +102,12 @@ function buildResponse(options){
         type: "PlainText",
         text: options.repromptText
       }
+    }
+  }
+
+  if(options.accountLinkCard){
+    response.response.card={
+      type:"LinkAccount"
     }
   }
   return response;
