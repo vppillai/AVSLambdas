@@ -56,6 +56,10 @@ function getDevicesFromPartnerCloud(response, callback) {
                 //TODO: hardcoded state reporting property
                 deviceData.willReportState = false;
 
+                //add controlTopic to CustomData
+                deviceData.customData = {}
+                deviceData.customData.controlTopic = data.things[i].attributes.controlTopic;
+
                 //deepCopy
                 //console.log(`pushing ${JSON.stringify(deviceData)}`);
                 response.payload.devices.push(JSON.parse(JSON.stringify(deviceData)));
@@ -85,91 +89,75 @@ function handleSync(callback) {
     getDevicesFromPartnerCloud(response, callback);
 }
 
-function AWSDeviceMessaging(params, message, callback) {
-    iot.listThings(params, function (err, thingData) {
-        if (err) {                              // an error occurred
+function AWSDeviceMessaging(controlTopic, message, callback) {
+    iot.describeEndpoint({}, function (err, epData) {
+        if (err) {  // an error occurred
             console.log(err, err.stack);
-            log('ERROR', err.stack);
             callback(new Error(err));
         }
-        else {// successful response
-            //console.log(`Thing Data: ${thingData}`);  
-            //console.log(`found ${params.attributeValue}`);
+        else {                             // successful response
+            iotData = new AWS.IotData({ endpoint: epData.endpointAddress });
+            var messageData = JSON.stringify(message);
+            var params = {
+                topic: controlTopic,
+                payload: messageData,
+                qos: 1
+            };
 
-            iot.describeEndpoint({}, function (err, epData) {
-                if (err) {  // an error occurred
-                    console.log(err, err.stack);
+            iotData.publish(params, function (err, pubData) {
+                //console.log(`publishing to ${params.topic}`)
+                if (err) {// an error occurred
+                    console.log(err, err.stack); // an error occurred
                     callback(new Error(err));
                 }
-                else {                             // successful response
-                    iotData = new AWS.IotData({ endpoint: epData.endpointAddress });
-                    var messageData = JSON.stringify(message);
-                    var params = {
-                        topic: thingData.things[0].attributes.controlTopic,
-                        payload: messageData,
-                        qos: 1
-                    };
-
-                    iotData.publish(params, function (err, pubData) {
-                        //console.log(`publishing to ${params.topic}`)
-                        if (err) {// an error occurred
-                            console.log(err, err.stack); // an error occurred
-                            callback(new Error(err));
-                        }
-                        else {								  // successful response
-                            callback();
-                        }
-                    });
+                else {								  // successful response
+                    callback();
                 }
             });
         }
     });
 }
+//    });
+//}
 
 //hardcoded response
-function execCompleted(deviceIds,requestOnState,callback){
-var response= {
-    requestId: "ff36a3cc-ec34-11e6-b1a0-64510650abcf", //TODO: should request ID match original incoming request ID?
-    payload: {
-      commands: [{
-        ids: deviceIds,
-        status: "SUCCESS",
-        states: {
-          on: requestOnState,
-          online: true
+function execCompleted(deviceIds, requestOnState, callback) {
+    var response = {
+        requestId: "ff36a3cc-ec34-11e6-b1a0-64510650abcf", //TODO: should request ID match original incoming request ID?
+        payload: {
+            commands: [{
+                ids: deviceIds,
+                status: "SUCCESS",
+                states: {
+                    on: requestOnState,
+                    online: true
+                }
+            }]
         }
-      }]
     }
-  }
-  callback(null,response);
+    callback(null, response);
 }
 
-function turnOnOff(deviceIds,operationString, callback) {
+function turnOnOff(deviceIds, controlTopic, operationString, callback) {
     // Create the Iot object
     iot = new AWS.Iot({ 'region': process.env.region, apiVersion: '2015-05-28' });
 
-    var total = deviceIds.length;
+    var total = controlTopic.length;
     var count = 0;
 
     for (var i = 0; i < total; i++) {
         (function (index) {
-            var params = {
-                maxResults: 1,
-                attributeName: "IDName",
-                attributeValue: deviceIds[index]
-            };
-
-            AWSDeviceMessaging(params, { STATUS: operationString }, function(err, response){
-                if(err){
+            AWSDeviceMessaging(controlTopic[index], { STATUS: operationString }, function (err, response) {
+                if (err) {
                     console.log("ERROR>> AWSDeviceMessaging Returned Error")
                 }
                 count++;
-                if(count > total - 1) {
-                    if("ON"==operationString){
-                        execCompleted(deviceIds,true,callback);
+                if (count > total - 1) {
+                    if ("ON" == operationString) {
+                        execCompleted(deviceIds, true, callback);
                     }
-                    else if("OFF"==operationString){
-                        execCompleted(deviceIds,false,callback);
+                    else if ("OFF" == operationString) {
+                        execCompleted(deviceIds, false, callback);
                     }
                 }
             });
@@ -182,14 +170,18 @@ function handleExec(commands, callback) {
     //TODO: bad coding. But for now, this is the only suported action
     if (commands[0].execution[0].command == "action.devices.commands.OnOff") {
         var devices = [];
+        var controltopics = [];
         for (var i = 0; i < commands[0].devices.length; i++) {
             devices.push(JSON.parse(JSON.stringify(commands[0].devices[i].id)));
         }
+        for (var i = 0; i < commands[0].devices.length; i++) {
+            controltopics.push(JSON.parse(JSON.stringify(commands[0].devices[i].customData.controlTopic)));
+        }
         if (true == commands[0].execution[0].params.on) {
-            turnOnOff(devices,"ON", callback);
+            turnOnOff(devices, controltopics, "ON", callback);
         }
         else if (false == commands[0].execution[0].params.on) {
-            turnOnOff(devices,"OFF", callback);
+            turnOnOff(devices, controltopics, "OFF", callback);
         }
     }
 }
