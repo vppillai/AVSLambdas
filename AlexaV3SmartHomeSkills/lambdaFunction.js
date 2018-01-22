@@ -75,7 +75,7 @@ function getDevicesFromPartnerCloud(request, callback) {
 
                 //TODO: These traits are hardcoded for now
                 deviceData.displayCategories=[];
-                deviceData.displayCategories[0] = "SWITCH";
+                deviceData.displayCategories[0] = "LIGHT";
 
                 deviceData.cookie={};
                 deviceData.cookie.controlTopic=data.things[i].attributes.controlTopic;
