@@ -8,7 +8,7 @@ var endpointAddress;
 console.log('Loading function');
 
 function generateMessageID() {
-    return '38A28869-DD5E-48CE-BBE5-A4DB78CECB28'; // Dummy
+    return 'dnlzYWtoIHAgcGlsbGFp'; // Dummy
 }
 
 function getDevicesFromPartnerCloud(request, callback) {
