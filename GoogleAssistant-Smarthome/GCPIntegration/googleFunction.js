@@ -1,6 +1,6 @@
-const cloudRegion = 'us-central1';
-const projectId = 'microchipgcp-e9571';
-const serviceAccount = {} //to be filled with service account JSON
+const cloudRegion = 'us-central1'; //change region if required
+const projectId = ''; //add project ID here
+const serviceAccount = {} //include JSON from service account
 //const serviceAccount=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 
@@ -94,7 +94,40 @@ function getClient(cb) {
         cb(client);
     });
 }
+// Send configuration data to device.
+function setDeviceConfig(
+    client,
+    deviceId,
+    registryId,
+    projectId,
+    cloudRegion,
+    data,
+    version,
+    callback
+) {
+    const parentName = `projects/${projectId}/locations/${cloudRegion}`;
+    const registryName = `${parentName}/registries/${registryId}`;
 
+    const binaryData = Buffer.from(data).toString('base64');
+    const request = {
+        name: `${registryName}/devices/${deviceId}`,
+        versionToUpdate: version,
+        binaryData: binaryData
+    };
+
+    client.projects.locations.registries.devices.modifyCloudToDeviceConfig(request,
+        (err, data) => {
+            if (err) {
+                console.log('Could not update config:', deviceId);
+                console.log('Message: ', err);
+                callback(false);
+            } else {
+                console.log('Success :', data);
+                callback(true);
+            }
+        });
+    // [END iot_set_device_config]
+}
 
 function generateMessageID() {
     return requestID;
@@ -136,6 +169,9 @@ function getDevicesFromPartnerCloud(response, res) {
                         "willReportState": false,
                         "deviceInfo": {
                             "manufacturer": "Microchip Technologies"
+                        },
+                        "customData": {
+                            "registry": registryId
                         }
                     }]
             }
@@ -195,6 +231,45 @@ function getDevicesFromPartnerCloud(response, res) {
 
 }
 
+function handleExec(payload, res) {
+
+    function sendResponse(status) {
+        var execResponse = {
+            "requestId": requestID,
+            "payload": {
+                "commands": [{
+                    "ids": [payload.commands[0].devices[0].id],
+                    "status": "SUCCESS", //currently sending blanket success
+                    "states": {
+                        "on": true,
+                        "online": true
+                    }
+                }]
+            }
+        }
+        res.status(200).send(deviceTemplate);
+    }
+
+    //set device configuration
+    const setDeviceConfigCb = function (client) {
+        var command = "";
+        if ("action.devices.commands.OnOff" == payload.commands[0].execution[0].command) {
+            if (true == payload.commands[0].execution[0].params.on) command = "LEDOn"
+            else if (false == payload.commands[0].execution[0].params.on) command = "LEDOff"
+        }
+        setDeviceConfig(
+            client,
+            payload.commands[0].devices[0].id,
+            payload.commands[0].devices[0].customData.registry,
+            projectId,
+            cloudRegion,
+            command,
+            0,
+            sendResponse
+        );
+    };
+    getClient(setDeviceConfigCb);
+}
 
 exports.helloWorld = (req, res) => {
     intent = req.body.inputs[0].intent;
@@ -210,7 +285,7 @@ exports.helloWorld = (req, res) => {
             break;
         case "action.devices.EXECUTE":
             console.error("EXEC called");
-            //execute(req, res);
+            handleExec(req.body.inputs[0].payload, res);
             break;
     }
     //res.status(200).send("helloWorld")
