@@ -4,7 +4,6 @@ const serviceAccount = {} //include JSON from service account
 //const serviceAccount=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 
-
 var requestID;
 const API_VERSION = 'v1';
 const DISCOVERY_API = 'https://cloudiot.googleapis.com/$discovery/rest';
@@ -272,8 +271,23 @@ function handleExec(payload, res) {
     getClient(setDeviceConfigCb);
 }
 
+function handleQuery(payload res) {
+    var deviceID = payload.commands[0].devices[0].id;
+    var queryResponse = {
+        "requestId": requestID,
+        "payload": {
+            "devices": {
+                deviceID: {
+                    "on": true,
+                    "online": true
+                }
+            }
+        }
+    }
+    res.status(200).send(queryResponse);
+}
 exports.helloWorld = (req, res) => {
-    console.log(JSON.stringify(req));
+    console.log(JSON.stringify(req.body));
     intent = req.body.inputs[0].intent;
     requestID = req.body.requestId;
     switch (intent) {
@@ -283,7 +297,7 @@ exports.helloWorld = (req, res) => {
             break;
         case "action.devices.QUERY":
             console.error("QUERY called");
-            //query(req, res);
+            handleQuery(req.body.inputs[0].payload, res);
             break;
         case "action.devices.EXECUTE":
             console.error("EXEC called");
