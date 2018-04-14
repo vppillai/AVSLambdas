@@ -4,6 +4,7 @@ const serviceAccount = {} //include JSON from service account
 //const serviceAccount=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 
+
 var requestID;
 const API_VERSION = 'v1';
 const DISCOVERY_API = 'https://cloudiot.googleapis.com/$discovery/rest';
@@ -272,7 +273,7 @@ function handleExec(payload, res) {
 }
 
 exports.helloWorld = (req, res) => {
-    console.log(req.body);
+    console.log(JSON.stringify(req));
     intent = req.body.inputs[0].intent;
     requestID = req.body.requestId;
     switch (intent) {
