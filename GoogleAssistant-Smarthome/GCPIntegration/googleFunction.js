@@ -271,19 +271,20 @@ function handleExec(payload, res) {
     getClient(setDeviceConfigCb);
 }
 
-function handleQuery(payload res) {
-    var deviceID = payload.commands[0].devices[0].id;
+function handleQuery(payload, res) {
+    var deviceID = payload.devices[0].id;
     var queryResponse = {
         "requestId": requestID,
         "payload": {
             "devices": {
-                deviceID: {
-                    "on": true,
-                    "online": true
                 }
             }
         }
     }
+    queryResponse.payload.devices[deviceID]= {
+        "on": true,
+        "online": true};
+    console.log(JSON.stringify(queryResponse));
     res.status(200).send(queryResponse);
 }
 exports.helloWorld = (req, res) => {
