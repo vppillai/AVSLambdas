@@ -240,12 +240,13 @@ function handleExec(payload, res) {
                     "ids": [payload.commands[0].devices[0].id],
                     "status": "SUCCESS", //currently sending blanket success
                     "states": {
-                        "on": true,
+                        "on": payload.commands[0].execution[0].params.on,
                         "online": true
                     }
                 }]
             }
         }
+        console.log(JSON.stringify(execResponse));
         res.status(200).send(execResponse);
     }
 
@@ -271,6 +272,7 @@ function handleExec(payload, res) {
 }
 
 exports.helloWorld = (req, res) => {
+    console.log(req.body);
     intent = req.body.inputs[0].intent;
     requestID = req.body.requestId;
     switch (intent) {
