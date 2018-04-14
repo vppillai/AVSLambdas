@@ -4,7 +4,6 @@ const serviceAccount = {} //include JSON from service account
 //const serviceAccount=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 
-
 var requestID;
 const API_VERSION = 'v1';
 const DISCOVERY_API = 'https://cloudiot.googleapis.com/$discovery/rest';
@@ -156,7 +155,7 @@ function handleSync(res) {
 function getDevicesFromPartnerCloud(response, res) {
     //process device metadata
     function processDeviceData(devData) {
-        deviceTemplate = {
+        var deviceTemplate = {
             "requestId": requestID,
             "payload": {
                 "agentUserId": "VnlzYWtoIFAgUGlsbGFp",
@@ -247,7 +246,7 @@ function handleExec(payload, res) {
                 }]
             }
         }
-        res.status(200).send(deviceTemplate);
+        res.status(200).send(execResponse);
     }
 
     //set device configuration
