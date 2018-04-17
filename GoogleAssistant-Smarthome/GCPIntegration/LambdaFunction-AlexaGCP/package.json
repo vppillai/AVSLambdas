@@ -1,0 +1,15 @@
+{
+  "name": "alexa_v3_gcp_code",
+  "version": "0.0.1",
+  "dependencies": {
+    "googleapis": "20.1.0"
+  },
+  "description": "Alexa GCP V3 code",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
