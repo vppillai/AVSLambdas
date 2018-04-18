@@ -2,8 +2,6 @@ const cloudRegion = 'us-central1'; //change region if required
 const projectId = ''; //add project ID here
 const serviceAccount = {} //include JSON from service account
 //const serviceAccount=process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-
 var requestID;
 const API_VERSION = 'v1';
 const DISCOVERY_API = 'https://cloudiot.googleapis.com/$discovery/rest';
@@ -277,13 +275,13 @@ function handleQuery(payload, res) {
         "requestId": requestID,
         "payload": {
             "devices": {
-                }
             }
         }
     }
-    queryResponse.payload.devices[deviceID]= {
+    queryResponse.payload.devices[deviceID] = {
         "on": true,
-        "online": true};
+        "online": true
+    };
     console.log(JSON.stringify(queryResponse));
     res.status(200).send(queryResponse);
 }
