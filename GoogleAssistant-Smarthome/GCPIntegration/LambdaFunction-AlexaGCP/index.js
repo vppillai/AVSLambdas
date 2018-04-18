@@ -1,18 +1,7 @@
 'use strict';
 const cloudRegion = 'us-central1';
 const projectId = 'microchipgcp-e9571';
-const serviceAccount = {
-    "type": "service_account",
-    "project_id": "microchipgcp-e9571",
-    "private_key_id": "1cef108e5f3a1268f8fc563226006fe9cad7d1f7",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC+eXkl9RX93c+X\nhWv/XF576TW131TSW4vavzQxkdRjk+oiJRejGR6EUS2pqQcXVEWKtzZkZC6yarM5\nYxONR5BT/YCqq16csrLgZkteYxBDSPnK93Cmk+ywiRpFpOVOdnLcfl0ke5odmX22\n9sr+3T1i9TXN7sHHlqoE9B+00/nZAkJeqjwPP4m310K0uLKPsL1+q9KOkY57uZ60\ncfyRxZy28IjkQPnL1bIjEaCWyMeC9vJaNorIaD5H0b80S8bXQUtFQL6viOQDh5yE\nCGZKxFCJsp12+UXl9yNeVqkGMFINYysr/NCWpC4bnv5kED4gsGzcrgyh7FsqS0Uh\n0N4crRJjAgMBAAECggEACxsvd98f4SWbLSKXzClT+Qr9bsAO72psb9zQ652tMgE1\n7bfBS76d4Ok62GGwCtQxxIeE9xBAXiGKlxYH1dJjwAH6tqOMvhD4DSLp0h8Z8P0Y\nU5VfTtc2kzSWAOmUf/a4ISiHwHt/M6qiLJZHT9pmnJaKWe+fV5vus0s+GLUjebEQ\n5HWnfqyUajGp9fCPzw+tizuS3M+XbhPAJAMan6Lg5YC+ilA1YCga8l0fe/T4nXsT\nijsO0oUkd0k01V0NNxJXihIPWDqkl2ZkFuxhsOXEmzGH0hPfNIjKqhtgAuI3+grW\nOStoXmINwGk8zCaPPn3XnhcylXdaWihV3oEecWoEQQKBgQDrwJVVdpKdHQH2dpBi\nIr+4xW1lGNgIFTxvISIOqHV+H/smyy8/VioCzWx2ksLm6Jskz9g+MEcxaKpl0qvR\nYwDzCv01XRR2+T+VffrW3VooQUdamWx3PghktvLH+DKpyVyDWZKK7cSFKsxj/JWS\nNSj3LA+DAAzcdweBHBQ3pQheZwKBgQDO1WF0JsiWCybW5hg1S+0jE74byvQD91Yu\nhPtXqj1TcYL1GPl0DHAqnRlWyJe0ImsZHA8WoHBCKzv5i01AY09D7HIRec1tFPqe\nVpdBXNY6FUW44zKvAiYtwZqU465TTU5GXrjF/H8XtwJPXoApK4BDDFgbGF1GJZjM\nrNbCKp22pQKBgElm09ghK/L5FiRbtAaqFRF9ftsMSi7yFbfwE/+GWdakNHlWp+ZL\neJcYyJ1+gmqMn8ltYUGznGb41J0RY+e0sJX7pOzZh0anwjFUYSZHEwwXjxTZUhkq\nWkipYZv7XiLZDBHlcKgK8bYYpjy3ZwZ3wMJ8mHPMLzTxZoe/a1gL7TgfAoGAPdaa\nHmoCCqom4JVGo5ihu50Jd7HEJvNp9tqXcuxZDXuglbrzyfh2CKeTjdjHUnn/3y/+\natto9L+MXN2DKT8H0dz9dbAe9QAStghZjJc/DXqSr+ZtntlbpM5/cwhndExmnK9x\nOvB05xg2PpiYZLa20FT+eotcR76x4m/CfabUJGkCgYBOwhgXznVGc5MkBkSGXOSF\nQkaMZcpdwRBVGhi5F2w4Z89Ouxya74TFbUywlh4WncN1D89J+E/LshB8fulaFcH4\n03IU3mvzuj31ZjGK6iPeZGJ2ilZSFHR+nq/zwK3edqADkzI/9S4ZJ+hie6CNfQHI\nHmBrVRoyYHotqyK+kkIjgA==\n-----END PRIVATE KEY-----\n",
-    "client_email": "apiaccess@microchipgcp-e9571.iam.gserviceaccount.com",
-    "client_id": "102235892537352563929",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://accounts.google.com/o/oauth2/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/apiaccess%40microchipgcp-e9571.iam.gserviceaccount.com"
-}
+const serviceAccount = {}
 
 
 var requestID;
