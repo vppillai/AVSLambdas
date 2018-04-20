@@ -1,0 +1,59 @@
+msc {
+
+GOOGLE_HOME, GOOGLE_ACTIONS, GOOGLE_FUNCTIONS,AWS_COGNITO,GOOGLE_IOT_CORE,DEVICE,USER,AMAZON_ECHO,ALEXA_SKILLS_KIT,AWS_LAMBDA;
+
+GOOGLE_HOME alt USER [label="GoogleHome - Device Discovery",linecolor="green"]{
+USER=>GOOGLE_HOME [label="Smart Home Action installation"];
+GOOGLE_HOME=>GOOGLE_ACTIONS [label=""];
+GOOGLE_ACTIONS=>AWS_COGNITO [label="Account Linking"];
+AWS_COGNITO=>GOOGLE_ACTIONS [label="User Token"];
+GOOGLE_ACTIONS=>GOOGLE_FUNCTIONS [label="Device discovery"];
+GOOGLE_FUNCTIONS=>GOOGLE_IOT_CORE [label="Device discovery"];
+GOOGLE_IOT_CORE=>DEVICE [label="Device discovery"];
+DEVICE=>GOOGLE_IOT_CORE [label="Device Details"];
+GOOGLE_IOT_CORE=>GOOGLE_FUNCTIONS [label="Device Details"];
+GOOGLE_FUNCTIONS=>GOOGLE_ACTIONS [label="Device details"];
+GOOGLE_ACTIONS=>GOOGLE_ACTIONS [label="google home graph"];
+};
+
+GOOGLE_HOME alt USER [label="GoogleHome - Execution",linecolor="blue"]{
+USER=>GOOGLE_HOME [label="Turn on the Light"];
+GOOGLE_HOME=>GOOGLE_ACTIONS ;
+GOOGLE_ACTIONS=>GOOGLE_FUNCTIONS[label="TurnOn Request"];
+GOOGLE_FUNCTIONS=>GOOGLE_IOT_CORE[label="Turn on Request (pub/sub)"];
+GOOGLE_IOT_CORE => DEVICE [label="MQTT Message {LEDOn}"];
+DEVICE=>GOOGLE_IOT_CORE [label="ACK"];
+GOOGLE_IOT_CORE=>GOOGLE_FUNCTIONS [label="ACK"];
+GOOGLE_FUNCTIONS=>GOOGLE_ACTIONS [label="ACK"];
+GOOGLE_ACTIONS=>GOOGLE_HOME [label="ACK"];
+GOOGLE_HOME=>USER [label="acknowledgement voice prompt"];
+};
+
+AWS_COGNITO alt AWS_LAMBDA [label="Amazon Alexa - Device discovery",linecolor="orange"]{
+USER=>AMAZON_ECHO [label="Amazon Echo - Device discovery"];
+AMAZON_ECHO=>ALEXA_SKILLS_KIT [label="Skill initialization"];
+ALEXA_SKILLS_KIT=>AWS_COGNITO [label="Account Linking"];
+AWS_COGNITO=>ALEXA_SKILLS_KIT [label="User Token"];
+ALEXA_SKILLS_KIT=>AWS_LAMBDA [label="Device discovery"];
+AWS_LAMBDA=>GOOGLE_IOT_CORE [label="Device discovery"];
+GOOGLE_IOT_CORE=>DEVICE [label="Device discovery"];
+DEVICE=>GOOGLE_IOT_CORE [label="Device Details"];
+GOOGLE_IOT_CORE=>AWS_LAMBDA [label="Device Details"];
+AWS_LAMBDA=>ALEXA_SKILLS_KIT [label="Device details"];
+ALEXA_SKILLS_KIT=>ALEXA_SKILLS_KIT [label="Smart Home Device List"];
+};
+
+GOOGLE_IOT_CORE alt AWS_LAMBDA [label="Amazon Alexa - Execution",linecolor="purple"]{
+USER=>AMAZON_ECHO [label="Turn on the Light"];
+AMAZON_ECHO=>ALEXA_SKILLS_KIT ;
+ALEXA_SKILLS_KIT=>AWS_LAMBDA[label="TurnOn Request"];
+AWS_LAMBDA=>GOOGLE_IOT_CORE[label="Turn on Request (pub/sub)"];
+GOOGLE_IOT_CORE => DEVICE [label="MQTT Message {LEDOn}"];
+DEVICE=>GOOGLE_IOT_CORE [label="ACK"];
+GOOGLE_IOT_CORE=>AWS_LAMBDA [label="ACK"];
+AWS_LAMBDA=>ALEXA_SKILLS_KIT [label="ACK"];
+ALEXA_SKILLS_KIT=>AMAZON_ECHO [label="ACK"];
+AMAZON_ECHO=>USER [label="acknowledgement voice prompt"];
+};
+
+}
