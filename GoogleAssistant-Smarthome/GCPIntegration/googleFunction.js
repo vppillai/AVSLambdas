@@ -224,7 +224,7 @@ function getDevicesFromPartnerCloud(response, res) {
         const getDeviceCb = function (client) {
             getDevice(
                 client,
-                devices, //currently supporting only one device
+                devices, 
                 registryId,
                 projectId,
                 cloudRegion,

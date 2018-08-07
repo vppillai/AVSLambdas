@@ -1,8 +1,7 @@
 'use strict';
-const cloudRegion = 'us-central1';
-const projectId = 'microchipgcp-e9571';
+const cloudRegion = '';
+const projectId = '';
 const serviceAccount = {}
-
 
 var requestID;
 const API_VERSION = 'v1';
@@ -51,23 +50,35 @@ function listDevices(client, registryId, projectId, cloudRegion, callback) {
 }
 
 //Retrieve the given device from the registry.
-function getDevice(client, deviceId, registryId, projectId, cloudRegion, callback) {
+function getDevice(client, devices, registryId, projectId, cloudRegion, callback) {
     const parentName = `projects/${projectId}/locations/${cloudRegion}`;
     const registryName = `${parentName}/registries/${registryId}`;
-    const request = {
-        name: `${registryName}/devices/${deviceId}`
-    };
 
-    client.projects.locations.registries.devices.get(request, (err, data) => {
-        if (err) {
-            console.log('Could not find device:', deviceId);
-            console.log(err);
-        } else {
-            console.log('Found device:', deviceId);
-            //    console.log(data);
-            callback(data);
-        }
-    });
+    var devData = [];
+
+    var i;
+    for (i = 0; i < devices.length; i++) { //get all device infos
+        const request = {
+            name: `${registryName}/devices/${devices[i].id}`
+        };
+
+        client.projects.locations.registries.devices.get(request, (err, data) => {
+            if (err) {
+                // console.log('Could not find device:', devices[i].id);
+                console.log(err);
+            } else {
+                // console.log('Found device:', devices[i].id);
+                //    console.log(data);
+                devData.push(data);
+                devData = JSON.parse(JSON.stringify(devData)); //deepcopy
+
+                if (devData.length == devices.length) { //callback when all devices are available.
+                    console.log(devData)
+                    callback(devData);
+                }
+            }
+        });
+    }
 }
 
 //Returns an authorized API client by discovering the Cloud IoT Core API with
@@ -134,7 +145,7 @@ function generateMessageID() {
 }
 
 function getDevicesFromPartnerCloud(request, callback) {
-    function processDeviceData(devData) {
+    function processDeviceData(devDataArray) {
 
         var header = request.directive.header;
         header.name = "Discover.Response";
@@ -161,34 +172,37 @@ function getDevicesFromPartnerCloud(request, callback) {
         var deviceData = {};
         deviceData.endpointId = [];
 
-        deviceData.endpointId = devData.id;
-        if (devData.metadata.name) {
-            deviceData.friendlyName = devData.metadata.name;
-            console.log("deviceName: " + devData.metadata.name);
+        var i;
+        for (i = 0; i < devDataArray.length; i++) {
+            var devData = devDataArray[i];
+            deviceData.endpointId = devData.id;
+            if (devData.metadata.name) {
+                deviceData.friendlyName = devData.metadata.name;
+                console.log("deviceName: " + devData.metadata.name);
+            }
+            else {
+                deviceData.friendlyName = devData.id;
+                console.log("we will call him " + devData.id);
+            }
+
+            deviceData.description = "GCP Light";
+            deviceData.manufacturerName = "Microchip Technologies";
+            //TODO: These traits are hardcoded for now
+            deviceData.displayCategories = [];
+            deviceData.displayCategories[0] = "LIGHT";
+
+            deviceData.cookie = {};
+            deviceData.cookie.registry = registryId;
+
+            //deep copy Caps
+            deviceData.capabilities = [];
+            deviceData.capabilities.push(JSON.parse(JSON.stringify(lightCaps[0])));
+            deviceData.capabilities.push(JSON.parse(JSON.stringify(lightCaps[1])));
+
+            //deepCopy
+            console.log(`pushing ${JSON.stringify(deviceData)}`);
+            response.endpoints.push(JSON.parse(JSON.stringify(deviceData)));
         }
-        else {
-            deviceData.friendlyName = devData.id;
-            console.log("we will call him " + devData.id);
-        }
-
-        deviceData.description = "GCP Light";
-        deviceData.manufacturerName = "Microchip Technologies";
-        //TODO: These traits are hardcoded for now
-        deviceData.displayCategories = [];
-        deviceData.displayCategories[0] = "LIGHT";
-
-        deviceData.cookie = {};
-        deviceData.cookie.registry = registryId;
-
-        //deep copy Caps
-        deviceData.capabilities = [];
-        deviceData.capabilities.push(JSON.parse(JSON.stringify(lightCaps[0])));
-        deviceData.capabilities.push(JSON.parse(JSON.stringify(lightCaps[1])));
-
-        //deepCopy
-        console.log(`pushing ${JSON.stringify(deviceData)}`);
-        response.endpoints.push(JSON.parse(JSON.stringify(deviceData)));
-
 
         console.log(`Discovery Response: ${JSON.stringify({ event: { header: header, payload: response } })}`);
         callback.succeed({ event: { header: header, payload: response } });
@@ -198,7 +212,7 @@ function getDevicesFromPartnerCloud(request, callback) {
         const getDeviceCb = function (client) {
             getDevice(
                 client,
-                devices[0].id, //currently supporting only one device
+                devices,
                 registryId,
                 projectId,
                 cloudRegion,
@@ -244,7 +258,7 @@ function turnOnOff(deviceId, requestRegistry, operationString, request, callback
             "timeOfSample": "2018-02-03T16:20:50.52Z", //retrieve from result.
             "uncertaintyInMilliseconds": 50
         }];
-       // contextResult.properties[0].timeOfSample=Date.now();
+        // contextResult.properties[0].timeOfSample=Date.now();
 
         var responseHeader = request.directive.header;
         responseHeader.namespace = "Alexa";
